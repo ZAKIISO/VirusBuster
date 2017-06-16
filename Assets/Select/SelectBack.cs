@@ -39,9 +39,9 @@ public class SelectBack : MonoBehaviour
                 if (tapObject == gameObject)
                 {
                     // 画像小さく
-                    transform.localScale = new Vector2(9f, 9f);
+                    transform.localScale = new Vector2(0.28f, 0.28f);
                     // 色変更
-                    ThisSp.color = new Color(0.5f, 0.5f, 0.5f);
+                    ThisSp.color = new Color(0.6f, 0.6f, 0.6f);
                 }
             }
         }
@@ -50,7 +50,7 @@ public class SelectBack : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             // 画像大きく
-            transform.localScale = new Vector2(10f, 10f);
+            transform.localScale = new Vector2(0.3f, 0.3f);
             // 色変更
             ThisSp.color = new Color(1, 1, 1);
 
