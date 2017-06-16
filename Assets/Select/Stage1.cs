@@ -77,7 +77,7 @@ public class Stage1 : MonoBehaviour
             if (frameCnt % 60 == 0)
             {
                 // シーン移動
-                SceneManager.LoadScene("test");
+                SceneManager.LoadScene("Stage");
                 frameCnt = 0;
                 SceneChange = false;
             }
