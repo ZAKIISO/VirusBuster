@@ -17,11 +17,13 @@ public class ComputingDevice : MonoBehaviour
     public bool F2flg;
     public bool F3flg;
     public bool F4flg;
-    public bool F5flg;
-    // Use this for initialization
+
+    //他のオブジェクトのスクリプト
+    Enemy EnemyScript;
+
     void Start()
     {
-        //オブジェクト取得
+        //各オブジェクト取得
         Player_1 = GameObject.Find("Player1");
         Player_2 = GameObject.Find("Player2");
         FourCorner1 = GameObject.Find("kado1");
@@ -29,9 +31,11 @@ public class ComputingDevice : MonoBehaviour
         FourCorner3 = GameObject.Find("kado3");
         FourCorner4 = GameObject.Find("kado4");
 
+        //Enemyのスクリプト取得
+        EnemyScript = GameObject.Find("Enemy").GetComponent<Enemy>();
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         //------------------------------------------------------------------------------------------------------------
@@ -108,105 +112,94 @@ public class ComputingDevice : MonoBehaviour
         //------------------------------------------------------------------------------------------------------------
         ///上記４つの合計値を比較
         //------------------------------------------------------------------------------------------------------------
-
-        //---------------------------------------------
+        //最大値を求める
         float max = Mathf.Max(F1, F2, F3, F4);
-        if(max == F1)
+
+        if (EnemyScript.Player1Flg == false && EnemyScript.Player2Flg == false)
         {
-            F1flg = true;
+            //F1が1番大きい
+            if (max == F1)
+            {
+                F1flg = true;
+                //F2と一緒
+                if (max == F2)
+                {
+                    F2flg = true;
+                    //F3も一緒
+                    if (max == F3)
+                    {
+                        F3flg = true;
+                        //全部一緒
+                        if (max == 4)
+                        {
+                            F1flg = true;
+                        }
+                    }
+                }
+                //F3と一緒
+                else if (max == F3)
+                {
+                    F3flg = true;
+                }
+                //F4と一緒
+                else if (max == F4)
+                {
+                    F4flg = true;
+                }
+            }
+            //最大がF1じゃなくなった
+            else
+            {
+                F1flg = false;
+            }
+
+            //最大がF2
             if (max == F2)
             {
-                F1flg = true;
+                F2flg = true;
+                //F3と一緒
+                if (max == F3)
+                {
+                    F3flg = true;
+                }
+                //F4と一緒
+                else if (max == F4)
+                {
+                    F4flg = true;
+                }
             }
-            else if (max == F3)
+            //最大がF2じゃなくなった
+            else
             {
-                F1flg = true;
+                F2flg = false;
             }
-            else if (max == F4)
-            {
-                F1flg = true;
-            }
-        }
-        else
-        {
-            F1flg = false;
-        }
 
-        if (max == F2)
-        {
-            F2flg = true;
+            //最大がF3
             if (max == F3)
             {
-                F2flg = true;
+                F3flg = true;
+                //F4と一緒
+                if (max == F4)
+                {
+                    F4flg = true;
+                }
             }
-            else if (max == F4)
+            //最大がF3じゃなくなった
+            else
             {
-                F2flg = true;
+                F3flg = false;
             }
-        }
-        else
-        {
-            F2flg = false;
-        }
 
-        if (max == F3)
-        {
-            F3flg = true;
+            //最大がF4
             if (max == F4)
             {
-                F3flg = true;
+                F4flg = true;
+            }
+            //最大がF4じゃなくなった
+            else
+            {
+                F4flg = false;
             }
         }
-        else
-        {
-            F3flg = false;
-        }
-
-        if (max == F4)
-        {
-            F4flg = true;
-        }
-        else
-        {
-            F4flg = false;
-        }
-        //-----------------------------------------------
-
-        ////F1が１番大きい
-        //if (F1 > F2 && F1 > F3 && F1 > F4)
-        //{
-        //    F1flg = true;
-        //}
-        //else
-        //{
-        //    F1flg = false;
-        //}
-        ////F2が１番大きい
-        //if (F2 > F1 && F2 > F3 && F2 > F4)
-        //{
-        //    F2flg = true;
-        //}
-        //else
-        //{
-        //    F2flg = false;
-        //}
-        ////F3が１番大きい
-        //if (F3 > F1 && F3 > F2 && F3 > F4)
-        //{
-        //    F3flg = true;
-        //}
-        //else
-        //{
-        //    F3flg = false;
-        //}
-        ////F4が１番大きい
-        //if (F4 > F1 && F4 > F2 && F4 > F3)
-        //{
-        //    F4flg = true;
-        //}
-        //else
-        //{
-        //    F4flg = false;
-        //}
     }
 }

@@ -37,9 +37,10 @@ public class EnemySensor : MonoBehaviour
     //当たり判定があったとき
     void OnTriggerStay(Collider other)
     {
+        //センサーが壁に当たった
         if (other.gameObject.tag == "Wall")
         {
-
+            //どこに当たったか
             switch (Ichi)
             {
                 case UP:
@@ -56,12 +57,25 @@ public class EnemySensor : MonoBehaviour
                     break;
             }
         }
+
+        //プレイヤー１に当たった
+        if (other.gameObject.tag == "Player1")
+        {
+            EnemyScript.Player1Flg = true;
+        }
+        //プレイヤー２に当たった
+        if (other.gameObject.tag == "Player2")
+        {
+            EnemyScript.Player2Flg = true;
+        }
     }
     //当たり判定があったとき
     void OnTriggerExit(Collider other)
     {
+        //センサーが壁から離れた
         if (other.gameObject.tag == "Wall")
         {
+            //どこが離れたか
             switch (Ichi)
             {
                 case UP:

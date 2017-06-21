@@ -10,29 +10,38 @@ public class Enemy : MonoBehaviour
     public const int RIGHT = 2;//右
     public const int DOWN = 3;//下
     public const int LEFT = 4;//左
+
     //壁の判定
     public bool WallUp = false;//上の壁の判定
     public bool WallRight = false;//右の壁の判定
     public bool WallDown = false;//下の壁の判定
     public bool WallLeft = false;//左の壁の判定
-    public bool cross = false;//曲がり角の判定
-    float crossCnt = 0;//曲がり角カウント
+    public bool Player1Flg = false;//プレイヤー１の判定
+    public bool Player2Flg = false;//プレイヤー２の判定
+
     //向き判定
     public int muki;//向きの初期値
     public int mukiOld = NO;//前の向き
-    //スピード
-    public float speed = 2.0f;//移動速度
+
+    //移動速度
+    public float speed = 2.0f;
+
     //ポジションの変数
     Vector3 FourCorner1;//kado1
     Vector3 FourCorner2;//kado2
     Vector3 FourCorner3;//kado3
     Vector3 FourCorner4;//kado4
     Vector3 EnemyPos;//EnemyのPosition
+
     //他のScript取得の変数
     ComputingDevice CD;//ComputingDeviceの変数
 
+    //フレームカウント関連
     int frameNo;
     int Cnt = 30;
+
+    //逃避の変数
+    int ESPCNT = 0;
 
     void Start()
     {
@@ -46,24 +55,11 @@ public class Enemy : MonoBehaviour
     }
     void Update()
     {
-        //交差点の処理
-        if (cross)//crossがTrue
-        {
-            crossCnt += speed;//カウント起動
-            if (crossCnt > 5)//カウントが５より上
-            {
-                MukiSelect();//MukiSelect起動
-                cross = false;//crossをFalse
-                crossCnt = 0;//カウントを０
-            }
-        }
-
         //向きに対する移動
         switch (muki)
         {
             //上に移動
             case UP:
-                //GetComponent<Rigidbody>().velocity = new Vector2(0, speed);
                 frameNo++;
                 if (frameNo % Cnt == 0)
                 {
@@ -73,7 +69,6 @@ public class Enemy : MonoBehaviour
                 break;
             //下に移動
             case DOWN:
-                //GetComponent<Rigidbody>().velocity = new Vector2(0, -speed);
                 frameNo++;
                 if (frameNo % Cnt == 0)
                 {
@@ -83,7 +78,6 @@ public class Enemy : MonoBehaviour
                 break;
             //右に移動
             case RIGHT:
-                //GetComponent<Rigidbody>().velocity = new Vector2(speed, 0);
                 frameNo++;
                 if (frameNo % Cnt == 0)
                 {
@@ -93,7 +87,6 @@ public class Enemy : MonoBehaviour
                 break;
             //左に移動
             case LEFT:
-                //GetComponent<Rigidbody>().velocity = new Vector2(-speed, 0);
                 frameNo++;
                 if (frameNo % Cnt == 0)
                 {
@@ -104,153 +97,260 @@ public class Enemy : MonoBehaviour
         }
         //mukiOldを変更後の向きに変更
         mukiOld = muki;
-    }
 
-    //移動処理
-    void MukiSelect()
-    {
-        //Enemyのポジション取得
-        EnemyPos = transform.position;
-        float EnemyPosX = EnemyPos.x;//EnemyのXを取得
-        float EnemyPosY = EnemyPos.y;//EnemyのYを取得
-
-        //左上の角が１番遠い
+        //-------------------------------------------------------------------------------------------------------------------
+        //移動処理
+        //-------------------------------------------------------------------------------------------------------------------
+        //左上に行くーーーーー！！
         if (CD.F1flg == true)
         {
-            Debug.Log("f1flg");
-            //---------------------------------------------
-            //FC1のポジション取得
-            float FC1X = FourCorner1.x;
-            float FC1Y = FourCorner1.y;
-            float F1x = EnemyPosX - FC1X;
-            float F1y = EnemyPosY - FC1Y;
-            //---------------------------------------------
-
-            //--------------------------------------------------------------------
-            //F1に最短距離距離で移動
-            //--------------------------------------------------------------------
+            //左当たってない　かつ　前右じゃない
             if (WallLeft == false && mukiOld != RIGHT)
             {
-                if (WallLeft == false)
+                muki = LEFT;
+            }
+            //左当たってる
+            else if (WallLeft == true)
+            {
+                //上当たってない かつ　前下じゃない
+                if (WallUp == false && mukiOld != DOWN)
                 {
-                    muki = LEFT;
+                    muki = UP;
+                }
+                //上当たってる
+                else if (WallUp == true)
+                {
+                    //下当たってない　かつ　前左
+                    if (WallDown == false && mukiOld == LEFT)
+                    {
+                        muki = DOWN;
+                    }
+                    //右当たってない　かつ　前上
+                    else if (WallRight == false && mukiOld == UP)
+                    {
+                        muki = RIGHT;
+                    }
+                    //どこも向いてない
+                    else if (mukiOld == NO)
+                    {
+                        muki = DOWN;
+                    }
                 }
             }
-            else if (WallRight == false && mukiOld != LEFT)
+        }
+
+        //右上に行くーーーーー！！
+        if (CD.F2flg == true)
+        {
+            //右当たってない　かつ　前左じゃない
+            if (WallRight == false && mukiOld != LEFT)
             {
-                if (WallRight == false)
+                muki = RIGHT;
+            }
+            //右当たってる
+            else if (WallRight == true)
+            {
+                //上当たってない かつ　前下じゃない
+                if (WallUp == false && mukiOld != DOWN)
                 {
-                    muki = RIGHT;
+                    muki = UP;
+                }
+                //上当たってる
+                else if (WallUp == true)
+                {
+                    //下当たってない　かつ　前右
+                    if (WallDown == false && mukiOld == RIGHT)
+                    {
+                        muki = DOWN;
+                    }
+                    //右当たってない　かつ　前上
+                    else if (WallLeft == false && mukiOld == UP)
+                    {
+                        muki = LEFT;
+                    }
+                    //どこも向いてない
+                    else if (mukiOld == NO)
+                    {
+                        muki = DOWN;
+                    }
                 }
             }
-            if (WallDown == false && mukiOld != UP)
+        }
+
+        //右下に行くーーーーー！！
+        if (CD.F3flg == true)
+        {
+            //右当たってない　かつ　前左じゃない
+            if (WallRight == false && mukiOld != LEFT)
             {
+                muki = RIGHT;
+            }
+            //右に当たってる
+            else if (WallRight == true)
+            {
+                //下当たってない
+                if (WallDown == false && mukiOld != UP)
+                {
+                    muki = DOWN;
+                }
+                //下当たってる
+                else if (WallDown == true)
+                {
+                    //上当たってない　かつ　前右
+                    if (WallUp == false && mukiOld == RIGHT)
+                    {
+                        muki = UP;
+                    }
+                    //左当たってない　かつ　前下
+                    else if (WallLeft == false && mukiOld == DOWN)
+                    {
+                        muki = LEFT;
+                    }
+                    //どこも向いてない
+                    else if (mukiOld == NO)
+                    {
+                        muki = UP;
+                    }
+                }
+            }
+        }
+
+        //左下に行くーーーーー！！
+        if (CD.F4flg == true)
+        {
+            //左当たってない　かつ　前右じゃない
+            if (WallLeft == false && mukiOld != RIGHT)
+            {
+                muki = LEFT;
+            }
+            //左当たった
+            else if (WallLeft == true)
+            {
+                //下当たってない
                 if (WallDown == false)
                 {
                     muki = DOWN;
                 }
+                //下当たってる
+                else if (WallDown == true)
+                {
+                    //上当たってない　かつ　前左
+                    if (WallUp == false && mukiOld == LEFT)
+                    {
+                        muki = UP;
+                    }
+                    //右当たってない　かつ　前下
+                    else if (WallRight == false && mukiOld == DOWN)
+                    {
+                        muki = RIGHT;
+                    }
+                    //どこも向いてない
+                    else if (mukiOld == NO)
+                    {
+                        muki = UP;
+                    }
+                }
             }
-            if (WallUp == false && mukiOld != DOWN)
+        }
+
+        //プレイヤ１ or ２に当たった
+        if (Player1Flg == true || Player2Flg == true)
+        {
+            //前回の向きを調べ、逆方向に動く
+            if (ESPCNT == 0)
             {
-                if (WallUp == false)
+                //前上
+                if (mukiOld == UP)
+                {
+                    muki = DOWN;
+                    ESPCNT = 1;
+                }
+                //前下
+                if (mukiOld == DOWN)
                 {
                     muki = UP;
+                    ESPCNT = 2;
+                }
+                //前左
+                if (mukiOld == LEFT)
+                {
+                    muki = RIGHT;
+                    ESPCNT = 3;
+                }
+                //前右
+                if (mukiOld == RIGHT)
+                {
+                    muki = LEFT;
+                    ESPCNT = 4;
                 }
             }
-        }
-
-        //--------------------------------------------------------------------
-        //F2に最短距離距離で移動
-        //--------------------------------------------------------------------
-        if (CD.F2flg == true)
-        {
-            Debug.Log("f2flg");
-            float FC2X = FourCorner2.x;
-            float FC2Y = FourCorner2.y;
-            float F2x = EnemyPosX - FC2X;
-            float F2y = EnemyPosY - FC2Y;
-            if (Mathf.Abs(F2x) > Mathf.Abs(F2y))
+            //前回が上の時
+            if (ESPCNT == 1)
             {
-                if (F2x > 0)
+                //下に当たった
+                if (WallDown == true)
                 {
-                    if (WallLeft == false)
+                    //左に当たった　かつ　前回右じゃない
+                    if (WallLeft == true && mukiOld != RIGHT)
+                    {
+                        muki = RIGHT;
+                    }
+                    //右に当たった　かつ　前回左じゃない
+                    else if (WallRight == true && mukiOld != LEFT)
                     {
                         muki = LEFT;
                     }
                 }
-                else
+            }
+            //前回が下の時
+            if (ESPCNT == 2)
+            {
+                //上に当たった
+                if (WallUp == true)
                 {
-                    if (WallRight == false)
+                    //左に当たった　かつ　前回右じゃない
+                    if (WallLeft == true && mukiOld != RIGHT)
                     {
                         muki = RIGHT;
                     }
+                    //右に当たった　かつ　前回左じゃない
+                    else if (WallRight == true && mukiOld != LEFT)
+                    {
+                        muki = LEFT;
+                    }
                 }
             }
-            else
+            //前回が左の時
+            if (ESPCNT == 3)
             {
-                if (F2y > 0)
+                //右に当たった
+                if (WallRight == true)
                 {
-                    if(WallDown == false)
+                    //上に当たった　かつ　前回下じゃない
+                    if (WallUp == true && mukiOld != DOWN)
                     {
                         muki = DOWN;
                     }
-                }
-                else
-                {
-                    if (WallUp == false)
+                    //下に当たった　かつ　前回上じゃない
+                    else if (WallDown == true && mukiOld != UP)
                     {
                         muki = UP;
                     }
-                    else
-                    {
-                        if (WallRight == false)
-                        {
-                            muki = RIGHT;
-                        }
-                    }
                 }
             }
-        }
-
-        //--------------------------------------------------------------------
-        //F3に最短距離距離で移動
-        //--------------------------------------------------------------------
-        if (CD.F3flg == true)
-        {
-            Debug.Log("f3flg");
-            float FC3X = FourCorner3.x;
-            float FC3Y = FourCorner3.y;
-            float F3x = EnemyPosX - FC3X;
-            float F3y = EnemyPosY - FC3Y;
-            if (Mathf.Abs(F3x) > Mathf.Abs(F3y))
+            //前回が右の時
+            if (ESPCNT == 4)
             {
-                if (F3x > 0)
+                //左に当たった
+                if (WallLeft == true)
                 {
-                    if (WallLeft == false)
-                    {
-                        muki = LEFT;
-                    }
-                }
-                else
-                {
-                    if (WallRight == false)
-                    {
-                        muki = RIGHT;
-                    }
-                }
-            }
-            else
-            {
-                if (F3y > 0)
-                {
-                    if(WallDown == false)
+                    //上に当たった　かつ　前回右じゃない
+                    if (WallUp == true && mukiOld != DOWN)
                     {
                         muki = DOWN;
                     }
-                }
-                else
-                {
-                    if (WallUp == false)
+                    //下に当たった　かつ　前回上じゃない
+                    else if (WallDown == true && mukiOld != UP)
                     {
                         muki = UP;
                     }
@@ -258,67 +358,11 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        //--------------------------------------------------------------------
-        //F4に最短距離距離で移動
-        //--------------------------------------------------------------------
-        if (CD.F4flg == true)
+        //プレイヤー１と２に一回ずつ当たった
+        if (Player1Flg == true && Player2Flg == true)
         {
-            Debug.Log("f4flg");
-            float FC4X = FourCorner4.x;
-            float FC4Y = FourCorner4.y;
-            float F4x = EnemyPosX - FC4X;
-            float F4y = EnemyPosY - FC4Y;
-            if (Mathf.Abs(F4x) > Mathf.Abs(F4y))
-            {
-                if (F4x > 0)
-                {
-                    if (WallLeft == false)
-                    {
-                        muki = LEFT;
-                    }
-                    else
-                    {
-                        if (WallDown == false)
-                        {
-                            muki = DOWN;
-                        }
-                    }
-                }
-                else
-                {
-                    if (WallRight == false)
-                    {
-                        muki = RIGHT;
-                    }
-                }
-            }
-            else
-            {
-                if (F4y > 0)
-                {
-                    if (WallDown == false)
-                    {
-                        muki = DOWN;
-                    }
-                }
-                else
-                {
-                    if (WallUp == false)
-                    {
-                        muki = UP;
-                    }
-                }
-            }
+            //止まる
+            muki = NO;
         }
-        //バックせず行ける向き
-        if (muki == NO && mukiOld != DOWN && WallUp == false) muki = UP;
-        if (muki == NO && mukiOld != LEFT && WallRight == false) muki = RIGHT;
-        if (muki == NO && mukiOld != UP && WallDown == false) muki = DOWN;
-        if (muki == NO && mukiOld != RIGHT && WallLeft == false) muki = LEFT;
-        //とにかく進める向き
-        if (muki == NO && WallUp == false) muki = UP;
-        if (muki == NO && WallRight == false) muki = RIGHT;
-        if (muki == NO && WallDown == false) muki = DOWN;
-        if (muki == NO && WallLeft == false) muki = LEFT;
     }
 }
